@@ -3,7 +3,7 @@ import random
 
 instrument_id1 = 'PHILIPS_A'
 instrument_id2 = 'PHILIPS_B'
-VOLUME = 5
+VOLUME = 10
 INCREMENT = 0.1
 
 def get_data(e, prev, threshold=0.1):
@@ -99,10 +99,10 @@ def check_arbitrage(data,threshold=0.30):
         
     elif data[0][2] > data[1][2] + threshold:
         y = 1
-    elif data[0][0] > data[1][1] + 0.1: #added to test
-        y = 1
-    elif data[0][1] < data[1][0] + 0.1: #added to test
-        y = -1
+    # if data[0][0] > data[1][1] + 0.1: #added to test
+    #     y = 1
+    # elif data[1][0] > data[0][1] + 0.1: #added to test
+    #     y = -1
     else:
         y = 0
         
@@ -153,7 +153,7 @@ def position_overload(e):
     0 - all is well
     -1 - move position towards A
     1 - move position towards B'''
-    THRESHOLD = 20
+    THRESHOLD = 30
     positions = e.get_positions()
     if abs(positions[instrument_id1] - positions[instrument_id2]) > THRESHOLD:
         if positions[instrument_id1] < positions[instrument_id2]: 
@@ -186,12 +186,12 @@ def adjust_bid_price(e, instrument_id):
     bidprice = e.get_last_price_book(instrument_id).bids[0].price + INCREMENT
     
     if order_id is None:
-        result = e.insert_order(instrument_id, price=bidprice, volume=VOLUME, side='bid', order_type='limit')
+        result = e.insert_order(instrument_id, price=bidprice, volume=VOLUME, side='bid', order_type='ioc')
         print("CREATED NEW BID")
     else:
         if prev_price < e.get_last_price_book(instrument_id).bids[0].price:
             result = e.delete_order(instrument_id, order_id=order_id)
-            result = e.insert_order(instrument_id, price=bidprice, volume=VOLUME, side='bid', order_type='limit')
+            result = e.insert_order(instrument_id, price=bidprice, volume=VOLUME, side='bid', order_type='ioc')
             print("BID PRICE ADJUSTED")
     
 def adjust_ask_price(e, instrument_id):
@@ -203,11 +203,11 @@ def adjust_ask_price(e, instrument_id):
     askprice = e.get_last_price_book(instrument_id).asks[0].price - INCREMENT
     
     if order_id is None:
-        result = e.insert_order(instrument_id, price=askprice, volume=VOLUME, side='ask', order_type='limit')
+        result = e.insert_order(instrument_id, price=askprice, volume=VOLUME, side='ask', order_type='ioc')
         print("CREATED NEW ASK")
     else:
         if prev_price > e.get_last_price_book(instrument_id).asks[0].price:
             result = e.delete_order(instrument_id, order_id=order_id)
-            result = e.insert_order(instrument_id, price=askprice, volume=VOLUME, side='bid', order_type='limit')
+            result = e.insert_order(instrument_id, price=askprice, volume=VOLUME, side='bid', order_type='ioc')
             print("ASK PRICE ADJUSTED")
 

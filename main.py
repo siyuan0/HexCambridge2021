@@ -31,7 +31,7 @@ while True:
         continue
     
     
-    arbitrage_status = check_arbitrage(data,0.1)
+    arbitrage_status = check_arbitrage(data,0.3)
     
     if arbitrage_status == 0:
         withdraw_orders(e_instance)

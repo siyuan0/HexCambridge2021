@@ -17,8 +17,9 @@ prev_data = None
 moving_ave = 0
 moving_sum = []
 
-MAX_HISTORY = 50 #number of historical prices referenced for moving_ave
-THRESHOLD = 0.2 #deviation from moving_ave threshold before entering the market
+MAX_HISTORY = 20 #number of historical prices referenced for moving_ave
+MOMENTUM_HISTORY = 5 
+THRESHOLD = 0.1 #deviation from moving_ave threshold before entering the market
 TIME_DELAY = 0.25 #frequency of cycle
 VOLUME = 3 #volume per trade
 MAX_POSITION = 20 #max absolute position allowed on either instrument
@@ -29,7 +30,9 @@ while True:
     data, prev_data = get_data(e, prev_data)
     moving_sum.append((data[0][2] + data[1][2])/2)
     if len(moving_sum) >  MAX_HISTORY: moving_sum.pop(0)
+    momentum = sum(moving_sum[-MOMENTUM_HISTORY:])/MOMENTUM_HISTORY
     moving_ave = sum(moving_sum)/len(moving_sum)
+    moving_ave = (momentum + moving_ave) / 2
     print(moving_ave)
     
     positions = e.get_positions()
